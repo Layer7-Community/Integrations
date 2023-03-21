@@ -1,0 +1,33 @@
+# Use the derived Gateway image with the Luna client installed
+image:
+  registry: <YOUR_DOCKER_REGISTRY>
+  repository: <YOUR_DOCKER_REGISTRY>
+  tag: <TAG>
+
+# Append java.library.path and java.security.properties to enable the Gateway JVM to use Luna libraries
+config:
+  javaArgs:
+    - -Dcom.l7tech.bootstrap.autoTrustSslKey=trustAnchor,TrustedFor.SSL,TrustedFor.SAML_ISSUER
+    - -Dcom.l7tech.server.audit.message.saveToInternal=false
+    - -Dcom.l7tech.server.audit.admin.saveToInternal=false
+    - -Dcom.l7tech.server.audit.system.saveToInternal=false
+    - -Dcom.l7tech.server.audit.log.format=json
+    - -Djava.util.logging.config.file=/opt/SecureSpan/Gateway/node/default/etc/conf/log-override.properties
+    - -Dcom.l7tech.server.pkix.useDefaultTrustAnchors=false
+    - -Dcom.l7tech.security.ssl.hostAllowWildcard=true
+    - -Djava.library.path=/opt/SecureSpan/Gateway/runtime/lib/ext # library files such as LunaProvider.jar and libLunaAPI.so are installed here
+    - -Djava.security.properties=/opt/SecureSpan/Gateway/runtime/etc/ssg.security # Java security providers and Luna properties may be defined in the ssg.security file
+
+# JVM security setting overrides in the ssg.security file can be deployed as a Secret
+customConfig:
+  enabled: true
+  mounts:
+    - name: ssg-security-override
+      mountPath: /opt/SecureSpan/Gateway/runtime/etc/ssg.security
+      subPath: ssg.security
+      secret:
+        name: ssg-security-override-secret
+        item:
+          key: ssg.security
+          path: ssg.security
+
