@@ -8,7 +8,7 @@
 # requires ARG: CERT_NAME
 # requires ARG: PARTITION_NAME
   
-ARG GW_IMAGE=caapim/gateway:10.1.00
+ARG GW_IMAGE=caapim/gateway:11.0.00
 ARG CENTOS_IMAGE=centos:centos7
   
 FROM ${CENTOS_IMAGE} AS luna-min-client
@@ -95,6 +95,15 @@ FROM ${GW_IMAGE} AS gateway
 
 ARG CLIENT_TAR_FILENAME
 
+#
+# Add tar to GW image
+#
+ENV MICRODNF_ARGS=--disablerepo=*\ --enablerepo=ubi-9-appstream-rpms\ --enablerepo=ubi-9-baseos-rpms\ --setopt\ install_weak_deps=0
+USER root
+RUN mkdir /var/cache/yum/
+RUN microdnf ${MICRODNF_ARGS} install -y --nodocs tar && \
+    microdnf clean all && \
+    rm -rf /var/cache/yum
 # Add the luna client
 USER root
 COPY ${CLIENT_TAR_FILENAME} /tmp
