@@ -88,34 +88,27 @@ COPY ${CLIENT_PATCH_TAR_FILENAME} /tmp/patch/.
 # Extract patch to /tmp/patch
 RUN tar -xf /tmp/patch/${CLIENT_PATCH_TAR_FILENAME} --strip 1 -C /tmp/patch; rm -f /tmp/patch/${CLIENT_PATCH_TAR_FILENAME}
 
-#
-# Build new GW image with Luna client
-#
-FROM ${GW_IMAGE} AS gateway
-
-ARG CLIENT_TAR_FILENAME
-
-#
-# Add tar to GW image
-#
-ENV MICRODNF_ARGS=--disablerepo=*\ --enablerepo=ubi-9-appstream-rpms\ --enablerepo=ubi-9-baseos-rpms\ --setopt\ install_weak_deps=0
-USER root
-RUN mkdir /var/cache/yum/
-RUN microdnf ${MICRODNF_ARGS} install -y --nodocs tar && \
-    microdnf clean all && \
-    rm -rf /var/cache/yum
-# Add the luna client
-USER root
 COPY ${CLIENT_TAR_FILENAME} /tmp
 ENV LUNA_DIR /usr/local/luna
 RUN mkdir -p ${LUNA_DIR} \
   && tar xvf /tmp/${CLIENT_TAR_FILENAME} --strip 1 -C ${LUNA_DIR} \
   && rm -f /tmp/${CLIENT_TAR_FILENAME}
 
-COPY --from=luna-min-client "/home/luna-docker/config" "${LUNA_DIR}/config"
+RUN cp -r /home/luna-docker/config ${LUNA_DIR}/config
+
+
+#
+# Build new GW image with Luna client
+#
+FROM ${GW_IMAGE} AS gateway
+ARG CLIENT_TAR_FILENAME
+ENV LUNA_DIR /usr/local/luna
+USER root
+
+COPY --from=luna-min-client ${LUNA_DIR} ${LUNA_DIR}
+
 ENV ChrystokiConfigurationPath /usr/local/luna/config
 ENV PATH="${LUNA_DIR}/bin/64:${PATH}"
-
 
 # For non patched version, copy required jsp files from ${MIN_CLIENT_dir} directly
 #
