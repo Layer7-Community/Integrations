@@ -2,8 +2,8 @@
 
 ## Description
 
-This sample Dockerfile builds a derived Gateway 11.0.00 CR2+ image that can connect to Luna HSM 7.  Note: GW 11.0.00 CR2 and higher Container Gateway uses UBI9 from Iron Bank base image.
-Any Linux commands that are no longer available with this change need to be installed using Mircodnf.
+This sample Dockerfile builds a derived Gateway image 11.0 that can connect to Luna HSM 7.  Note: GW 11.0.00 CR2 and higher Container Gateway uses UBI9 from Iron Bank base image.
+Linux packages that are no longer available in the derived image with this change may be added back using mircodnf.
 
 ## Prerequisites/Dependencies
 The Dockerfile has specific steps to install the Luna Client 10.3 + Luna Client jdk11 patch.  The following files are required from Thales:
