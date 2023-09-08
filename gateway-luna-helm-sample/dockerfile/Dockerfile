@@ -1,6 +1,6 @@
 # requires secret: hsm-server-secret (file that contains password for HSM_USER)
   
-# requires ARG: GW_IMAGE (example caapim/gateway:10.1.00)
+# requires ARG: GW_IMAGE (example caapim/gateway:11.0.00)
 # requires ARG: CLIENT_TAR_FILENAME (example 610-000401-003_SW_Linux_Luna_Minimal_Client_V10.3.0_RevA.tar)   
 # requires ARG: CLIENT_PATCH_TAR_FILENAME (example 630-000522-001_Sw_Patch_jsp_fix_for_jdk11_UC10.3.0_Custom_Release.tar) 
 # requires ARG: HSM_USER
