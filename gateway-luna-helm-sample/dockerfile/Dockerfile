@@ -96,7 +96,6 @@ RUN mkdir -p ${LUNA_DIR} \
 
 RUN cp -r /home/luna-docker/config ${LUNA_DIR}/config
 
-
 #
 # Build new GW image with Luna client
 #
