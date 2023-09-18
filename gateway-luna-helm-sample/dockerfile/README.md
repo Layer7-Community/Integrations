@@ -1,7 +1,9 @@
 # Dockerfile for Gateway with Luna HSM Integration
 
 ## Description
-This sample Dockerfile builds a derived Gateway 10.1 image that can connect to Luna HSM 7.
+
+This sample Dockerfile builds a derived Gateway image 11.0 that can connect to Luna HSM 7.  It has been updated to work with the new 11.0.00 CR2 which uses the UBI9-minimal base image from Iron Bank.  This Dockerfile will likely work with 10.1 and 11.0 CR1 (which still use the CentOS7 base image) though it wasn't tested with those versions. For the UBI9-minimal base image, Linux packages that are no longer available 
+in the derived image may be added back using microdnf.
 
 ## Prerequisites/Dependencies
 The Dockerfile has specific steps to install the Luna Client 10.3 + Luna Client jdk11 patch.  The following files are required from Thales:

@@ -1,6 +1,6 @@
 # requires secret: hsm-server-secret (file that contains password for HSM_USER)
   
-# requires ARG: GW_IMAGE (example caapim/gateway:10.1.00)
+# requires ARG: GW_IMAGE (example caapim/gateway:11.0.00)
 # requires ARG: CLIENT_TAR_FILENAME (example 610-000401-003_SW_Linux_Luna_Minimal_Client_V10.3.0_RevA.tar)   
 # requires ARG: CLIENT_PATCH_TAR_FILENAME (example 630-000522-001_Sw_Patch_jsp_fix_for_jdk11_UC10.3.0_Custom_Release.tar) 
 # requires ARG: HSM_USER
@@ -8,7 +8,7 @@
 # requires ARG: CERT_NAME
 # requires ARG: PARTITION_NAME
   
-ARG GW_IMAGE=caapim/gateway:10.1.00
+ARG GW_IMAGE=caapim/gateway:11.0.00
 ARG CENTOS_IMAGE=centos:centos7
   
 FROM ${CENTOS_IMAGE} AS luna-min-client
@@ -88,25 +88,26 @@ COPY ${CLIENT_PATCH_TAR_FILENAME} /tmp/patch/.
 # Extract patch to /tmp/patch
 RUN tar -xf /tmp/patch/${CLIENT_PATCH_TAR_FILENAME} --strip 1 -C /tmp/patch; rm -f /tmp/patch/${CLIENT_PATCH_TAR_FILENAME}
 
-#
-# Build new GW image with Luna client
-#
-FROM ${GW_IMAGE} AS gateway
-
-ARG CLIENT_TAR_FILENAME
-
-# Add the luna client
-USER root
 COPY ${CLIENT_TAR_FILENAME} /tmp
 ENV LUNA_DIR /usr/local/luna
 RUN mkdir -p ${LUNA_DIR} \
   && tar xvf /tmp/${CLIENT_TAR_FILENAME} --strip 1 -C ${LUNA_DIR} \
   && rm -f /tmp/${CLIENT_TAR_FILENAME}
 
-COPY --from=luna-min-client "/home/luna-docker/config" "${LUNA_DIR}/config"
+RUN cp -r /home/luna-docker/config ${LUNA_DIR}/config
+
+#
+# Build new GW image with Luna client
+#
+FROM ${GW_IMAGE} AS gateway
+ARG CLIENT_TAR_FILENAME
+ENV LUNA_DIR /usr/local/luna
+USER root
+
+COPY --from=luna-min-client ${LUNA_DIR} ${LUNA_DIR}
+
 ENV ChrystokiConfigurationPath /usr/local/luna/config
 ENV PATH="${LUNA_DIR}/bin/64:${PATH}"
-
 
 # For non patched version, copy required jsp files from ${MIN_CLIENT_dir} directly
 #
