@@ -1,0 +1,123 @@
+license:
+  accept: false
+ #existingSecretName: ssg-license
+
+database:
+  enabled: false
+  create: false
+
+replicas: 1
+image:
+  registry: docker.io
+  repository: caapim/gateway
+  tag: 11.1.00
+
+podAnnotations:
+  instrumentation.opentelemetry.io/inject-java: "true"
+  instrumentation.opentelemetry.io/container-names: "gateway"
+  sidecar.opentelemetry.io/inject: "gateway-opentelemetry-collector"
+
+resources:
+  requests:
+    cpu: 2
+    memory: 4Gi
+  limits:
+    cpu: 2
+    memory: 4Gi
+
+config:
+  # Heap Size should be a percentage of the memory configured in resource limits
+  # by default it is 50% - you should not go above 75%
+  heapSize: "3g"
+  javaArgs:
+    - -Dcom.l7tech.bootstrap.autoTrustSslKey=trustAnchor,TrustedFor.SSL,TrustedFor.SAML_ISSUER
+    - -Dcom.l7tech.server.audit.message.saveToInternal=false
+    - -Dcom.l7tech.server.audit.admin.saveToInternal=false
+    - -Dcom.l7tech.server.audit.system.saveToInternal=false
+    - -Dcom.l7tech.server.audit.log.format=json
+    - -Djava.util.logging.config.file=/opt/SecureSpan/Gateway/node/default/etc/conf/log-override.properties
+    - -Dcom.l7tech.server.pkix.useDefaultTrustAnchors=true
+    - -Dcom.l7tech.security.ssl.hostAllowWildcard=true
+    - -Dcom.l7tech.server.disableFileLogsinks=false
+
+  systemProperties: |-
+    # Default Gateway system properties
+    # Configuration properties for shared state extensions.
+    com.l7tech.server.extension.sharedKeyValueStoreProvider=embeddedhazelcast
+    com.l7tech.server.extension.sharedCounterProvider=ssgdb
+    com.l7tech.server.extension.sharedClusterInfoProvider=ssgdb
+    # By default, FIPS module will block an RSA modulus from being used for encryption if it has been used for
+    # signing, or visa-versa. Set true to disable this default behaviour and remain backwards compatible.
+    com.safelogic.cryptocomply.rsa.allow_multi_use=true
+    # Specifies the type of Trust Store (JKS/PKCS12) provided by AdoptOpenJDK that is used by Gateway.
+    # Must be set correctly when Gateway is running in FIPS mode. If not specified it will default to PKCS12.
+    javax.net.ssl.trustStoreType=jks
+    # Period of time before the Gateway removes inactive nodes.
+    com.l7tech.server.clusterStaleNodeCleanupTimeoutSeconds=86400
+    # Additional properties go here
+    otel.instrumentation.common.default-enabled=true
+    otel.instrumentation.opentelemetry-api.enabled=true
+    otel.instrumentation.runtime-metrics.enabled=true
+    otel.instrumentation.runtime-telemetry.enabled=true
+    otel.instrumentation.opentelemetry-instrumentation-annotations.enabled=true
+    otel.java.global-autoconfigure.enabled=true
+    # If you want to use the built in OpenTelemetry SDK
+    # otel.sdk.disabled=false
+    # Only use these two props if you're using an OpenTelemetry Agent.
+    # otel.javaagent.configuration-file=/opt/SecureSpan/Gateway/node/default/etc/conf/system.properties
+    # javaagent:/otel-auto-instrumentation-java/javaagent.jar
+  cwp:
+    enabled: true
+    properties:
+      - name: io.httpsHostAllowWildcard
+        value: true
+      - name: log.levels
+        value: |
+          com.l7tech.level = CONFIG
+          com.l7tech.server.policy.variable.ServerVariables.level = SEVERE
+          com.l7tech.external.assertions.odata.server.producer.jdbc.GenerateSqlQuery.level = SEVERE
+          com.l7tech.server.policy.assertion.ServerSetVariableAssertion.level = SEVERE
+          com.l7tech.external.assertions.comparison.server.ServerComparisonAssertion.level = SEVERE
+      - name: audit.setDetailLevel.FINE
+        value: 152 7101 7103 9648 9645 7026 7027 4155 150 4716 4114 6306 4100 9655 150 151 11000 4104
+      - name: otel.enabled
+        value: "true"
+      - name: otel.serviceMetricEnabled
+        value: "true"
+      - name: otel.traceEnabled
+        value: "true"
+      - name: otel.metricPrefix
+        value: l7_
+      - name: otel.traceConfig
+        value: |
+          {
+            "services": [
+              {"resolutionPath": ".*"}
+            ]
+          }
+
+ingress:
+  # Set to true to create ingress object
+  enabled: true
+  # Ingress Class Name
+  ingressClassName: nginx
+  # Ingress annotations
+  annotations:
+  # Ingress class
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+  # nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+  # When the ingress is enabled, a host pointing to this will be created
+  # By default clusterHostname is used, only set this if you want to use a different host
+   ## Enable TLS configuration for the hostname defined at ingress.hostname/clusterHostname parameter
+  tls:
+  - hosts:
+    - gateway.brcmlabs.com
+    secretName: brcmlabs
+  rules:
+  - host: gateway.brcmlabs.com
+    path: "/"
+    service:
+      port:
+        name: https
+      number:
