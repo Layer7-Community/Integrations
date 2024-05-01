@@ -1080,8 +1080,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1178,8 +1177,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1276,8 +1274,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1374,8 +1371,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1435,14 +1431,14 @@
         "allValue": "\"\"",
         "current": {
           "selected": false,
-          "text": "ssgtest-gateway",
-          "value": "ssgtest-gateway"
+          "text": "ssg-otel-gateway",
+          "value": "ssg-otel-gateway"
         },
         "datasource": {
           "type": "prometheus",
           "uid": "mimir"
         },
-        "definition": "process_runtime_jvm_system_cpu_load_1m{job!=\"\"}",
+        "definition": "l7_service_attempted_count_total{job!=\"\"}",
         "hide": 0,
         "includeAll": false,
         "label": "Gateway Deployment",
@@ -1451,10 +1447,10 @@
         "options": [],
         "query": {
           "qryType": 4,
-          "query": "process_runtime_jvm_system_cpu_load_1m{job!=\"\"}",
+          "query": "l7_service_attempted_count_total{job!=\"\"}",
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
-        "refresh": 1,
+        "refresh": 2,
         "regex": "/.*job=\"([^\"]*)\"/",
         "skipUrlSync": false,
         "sort": 0,
@@ -1466,15 +1462,16 @@
       {
         "allValue": "\"\"",
         "current": {
+          "isNone": true,
           "selected": false,
-          "text": "ssgtest-gateway-58f7f7998b-hv5mc",
-          "value": "ssgtest-gateway-58f7f7998b-hv5mc"
+          "text": "None",
+          "value": ""
         },
         "datasource": {
           "type": "prometheus",
           "uid": "mimir"
         },
-        "definition": "process_runtime_jvm_system_cpu_load_1m{pod!=\"\",job=\"$gatewayDeployment\"}",
+        "definition": "l7_service_attempted_count_total{pod!=\"\",job=\"$gatewayDeployment\"}",
         "hide": 0,
         "includeAll": false,
         "label": "Pod",
@@ -1483,10 +1480,10 @@
         "options": [],
         "query": {
           "qryType": 4,
-          "query": "process_runtime_jvm_system_cpu_load_1m{pod!=\"\",job=\"$gatewayDeployment\"}",
+          "query": "l7_service_attempted_count_total{pod!=\"\",job=\"$gatewayDeployment\"}",
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
-        "refresh": 1,
+        "refresh": 2,
         "regex": "/.*pod=\"([^\"]*)\"/",
         "skipUrlSync": false,
         "sort": 0,
@@ -1499,8 +1496,8 @@
         "allValue": "\"\"",
         "current": {
           "selected": false,
-          "text": "Test",
-          "value": "Test"
+          "text": "Test12345",
+          "value": "Test12345"
         },
         "datasource": {
           "type": "prometheus",
@@ -1518,7 +1515,7 @@
           "query": "l7_service_attempted_count_total{l7_serviceName!=\"\", job=\"$gatewayDeployment\"}",
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
-        "refresh": 1,
+        "refresh": 2,
         "regex": "/.*l7_serviceName=\"([^\"]*)\"/",
         "skipUrlSync": false,
         "sort": 0,
@@ -1550,7 +1547,7 @@
           "query": "l7_service_attempted_count_total{l7_method!=\"\",l7_serviceName=\"$serviceName\", job=\"$gatewayDeployment\"}",
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
-        "refresh": 1,
+        "refresh": 2,
         "regex": "/.*l7_method=\"([^\"]*)\"/",
         "skipUrlSync": false,
         "sort": 0,

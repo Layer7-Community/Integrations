@@ -10,7 +10,9 @@ spec:
       otlp:
         protocols:
           grpc:
+            endpoint: 0.0.0.0:4317
           http:
+            endpoint: 0.0.0.0:4318
     processors:
       batch:
       transform:
@@ -21,8 +23,8 @@ spec:
             - set(attributes["container"], resource.attributes["k8s.container.name"])
             - set(attributes["pod"], resource.attributes["k8s.pod.name"])
     exporters:
-      logging:
-        loglevel: warn
+      debug:
+        verbosity: basic
       loki:
         endpoint: http://loki-loki-distributed-gateway.grafana-loki.svc.cluster.local/loki/api/v1/push
       prometheusremotewrite:
@@ -45,10 +47,10 @@ spec:
         metrics:
           receivers: [otlp]
           processors: [transform,batch]
-          exporters: [prometheusremotewrite, logging]
+          exporters: [prometheusremotewrite, debug]
         logs: 
           receivers: [otlp]
-          exporters: [logging,loki]
+          exporters: [debug,loki]
     extensions:
       health_check:
       pprof:

@@ -2,10 +2,6 @@ license:
   accept: false
  #existingSecretName: ssg-license
 
-database:
-  enabled: false
-  create: false
-
 replicas: 1
 image:
   registry: docker.io
@@ -25,6 +21,10 @@ resources:
     cpu: 2
     memory: 4Gi
 
+management:
+  graphman:
+    enabled: true
+
 config:
   # Heap Size should be a percentage of the memory configured in resource limits
   # by default it is 50% - you should not go above 75%
@@ -39,7 +39,6 @@ config:
     - -Dcom.l7tech.server.pkix.useDefaultTrustAnchors=true
     - -Dcom.l7tech.security.ssl.hostAllowWildcard=true
     - -Dcom.l7tech.server.disableFileLogsinks=false
-
   systemProperties: |-
     # Default Gateway system properties
     # Configuration properties for shared state extensions.
@@ -61,11 +60,6 @@ config:
     otel.instrumentation.runtime-telemetry.enabled=true
     otel.instrumentation.opentelemetry-instrumentation-annotations.enabled=true
     otel.java.global-autoconfigure.enabled=true
-    # If you want to use the built in OpenTelemetry SDK
-    # otel.sdk.disabled=false
-    # Only use these two props if you're using an OpenTelemetry Agent.
-    # otel.javaagent.configuration-file=/opt/SecureSpan/Gateway/node/default/etc/conf/system.properties
-    # javaagent:/otel-auto-instrumentation-java/javaagent.jar
   cwp:
     enabled: true
     properties:

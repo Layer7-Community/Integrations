@@ -173,9 +173,9 @@ We use the following [Helm Chart](https://github.com/prometheus-community/helm-c
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 helm repo update
 ```
-- Create the Layer7 Dashboard
+- Create the Layer7 Dashboards
 
-The dashboard is located in [./prometheus/grafana-dashboard/layer7-gateway-dashboard.json](./prometheus/grafana-dashboard/layer7-gateway-dashboard.json) and contains a simple grafana dashboard that gets populated with telemetry generated from the Gateway's OpenTelemetry integration. You will find more details about the integration on [Techdocs](techdocslink) and the [Gateway Helm Chart](gatewayhelmchartlink)
+The dashboards are located in [./prometheus/grafana-dashboard/](./prometheus/grafana-dashboard/) and contain two simple grafana dashboards that get populated with telemetry generated from the Gateway's OpenTelemetry integration. You will find more details about the integration on [Techdocs](https://techdocs.broadcom.com/us/en/ca-enterprise-software/layer7-api-management/api-gateway/11-1/install-configure-upgrade/configuring-opentelemetry-for-the-gateway.html) and the [Gateway Helm Chart](https://github.com/CAAPIM/apim-charts/blob/stable/charts/gateway/README.md#opentelemetry-configuration)
 ```
 kubectl apply -k ./prometheus/grafana-dashboard/
 ```
@@ -316,7 +316,13 @@ tempo-0                                    1/1     Running     0          3m17s
 
 
 ## Next Steps
-Now that you've configured the Observability stack it's time to head to the [Gateway Helm Chart](https://github.com/CAAPIM/apim-charts/tree/stable/charts/gateway) and configure your Gateway for OpenTelemetry. We have also included [values file](./gateway-example/gateway-otel-values.yaml) in this example that you shows all of the configuration overrides.
+Now that you've configured the Observability stack it's time to head to the [Gateway Helm Chart](https://github.com/CAAPIM/apim-charts/tree/stable/charts/gateway) and configure your Gateway for OpenTelemetry.
+
+We have also included two values files in this example that you shows all of the configuration overrides for the two Gateway scenarios
+- [SDK only, no agent](./gateway-example/gateway-sdk-only-values.yaml)
+- [Agent](./gateway-example/gateway-otel-java-agent-values.yaml)
+
+These Gateways only include the Graphman Service, they ***do not*** contain any other sample services.
 
 ## Uninstall
 If you used kind
