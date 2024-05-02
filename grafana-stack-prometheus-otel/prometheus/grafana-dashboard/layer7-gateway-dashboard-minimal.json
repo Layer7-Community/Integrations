@@ -18,7 +18,6 @@
     "editable": true,
     "fiscalYearStartMonth": 0,
     "graphTooltip": 0,
-    "id": 30,
     "links": [],
     "liveNow": false,
     "panels": [
@@ -896,7 +895,7 @@
       {
         "datasource": {
           "type": "tempo",
-          "uid": "caa853f8-508d-47f2-a711-ad469652ab58"
+          "uid": "tempo-minimal"
         },
         "fieldConfig": {
           "defaults": {
@@ -951,7 +950,7 @@
           {
             "datasource": {
               "type": "tempo",
-              "uid": "caa853f8-508d-47f2-a711-ad469652ab58"
+              "uid": "cdkic3qq3h8g0c"
             },
             "filters": [
               {
@@ -1113,13 +1112,13 @@
       ]
     },
     "time": {
-      "from": "now-5m",
+      "from": "now-15m",
       "to": "now"
     },
     "timepicker": {},
     "timezone": "",
     "title": "Gateway Dashboard-Minimal",
     "uid": "K5qg2_15m",
-    "version": 5,
+    "version": 1,
     "weekStart": ""
   }
