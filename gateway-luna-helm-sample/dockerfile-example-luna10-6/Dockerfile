@@ -1,14 +1,14 @@
 # requires secret: hsm-server-secret (file that contains password for HSM_USER)
   
-# requires ARG: GW_IMAGE (example caapim/gateway:11.0.00)
+# requires ARG: GW_IMAGE (example caapim/gateway:11.1.1)
 # requires ARG: CLIENT_TAR_FILENAME (example 610-000401-009_SW_Linux_Luna_Minimal_Client_V10.6.0_RevA.tar)
 # requires ARG: HSM_USER
 # requires ARG: HSM_SERVER
 # requires ARG: CERT_NAME
 # requires ARG: PARTITION_NAME
   
-ARG GW_IMAGE=caapim/gateway:11.1.00
-ARG CENTOS_IMAGE=centos:centos7
+ARG GW_IMAGE=caapim/gateway:11.1.1
+ARG CENTOS_IMAGE=quay.io/centos/centos:stream9
   
 FROM ${CENTOS_IMAGE} AS luna-min-client
   
@@ -57,7 +57,7 @@ RUN ./bin/64/configurator setValue -s Chrystoki2 -e LibUNIX -v $LUNA_DIR/libs/64
   && ./bin/64/configurator setValue -s "Secure Trusted Channel" -e PartitionIdentitiesDir -v $LUNA_DIR/config/stc/partition_identities
 
 # copy the hsm appliance server certificate
-RUN --mount=type=secret,id=hsm-server-secret,dst=/.hsm-server-secret sshpass -f /.hsm-server-secret scp -oStrictHostKeyChecking=no ${HSM_USER}@${HSM_SERVER}:server.pem $LUNA_DIR/config/certs
+RUN --mount=type=secret,id=hsm-server-secret,dst=/.hsm-server-secret sshpass -f /.hsm-server-secret scp -O -oStrictHostKeyChecking=no ${HSM_USER}@${HSM_SERVER}:server.pem $LUNA_DIR/config/certs
 
 # Register the appliance server certificate with the Client
 RUN ./bin/64/vtl addServer -c config/certs/server.pem -n ${HSM_SERVER}
@@ -67,7 +67,7 @@ RUN ./bin/64/vtl addServer -c config/certs/server.pem -n ${HSM_SERVER}
 # Create a Luna HSM Client certificate for the Docker container ($MIN_CLIENT_DIR/bin/64/vtl createCert -n <cert name>)
 RUN ./bin/64/vtl createCert -n ${CERT_NAME}
 # Copy the client certificate to the SafeNet Luna Network HSM appliance
-RUN --mount=type=secret,id=hsm-server-secret,dst=/.hsm-server-secret sshpass -f /.hsm-server-secret scp -oStrictHostKeyChecking=no config/certs/${CERT_NAME}.pem ${HSM_USER}@${HSM_SERVER}:
+RUN --mount=type=secret,id=hsm-server-secret,dst=/.hsm-server-secret sshpass -f /.hsm-server-secret scp -O -oStrictHostKeyChecking=no config/certs/${CERT_NAME}.pem ${HSM_USER}@${HSM_SERVER}:
 
 # Register client
 RUN --mount=type=secret,id=hsm-server-secret,dst=/.hsm-server-secret sshpass -f /.hsm-server-secret ssh ${HSM_USER}@${HSM_SERVER} "client register -client ${CERT_NAME} -hostname ${CERT_NAME}"
