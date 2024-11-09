@@ -1,0 +1,21 @@
+## Container GW Headless deployment in Kubernetes without Policy Manager(GW 11.1.2)
+1. Set disklessConfig.enabled to false. Create node.properites file with node.cluster.pass value set. Sample node.properties is for Derby configuration
+   Reference README for APIM Gateway charts GibHub Pages [Diskless Configuration](https://github.com/CAAPIM/apim-charts/blob/stable/charts/gateway/README.md#diskless-configuration) for MySQL database configuration
+2. create Kubernetes Secret
+```
+   kubectl create secret generic gateway-secret --from-file=node.properties=./node.properties
+```
+3. Encrypt LunaPIN by OpenSSL, password is value from node.cluster.pass
+```
+   echo -n '<LunaPIN>' | openssl enc -e -aes-256-cbc -pbkdf2 -iter 600000 -saltlen 16 -pass pass:<gateway_cluster_passphrase> -a;history -d $(history 1)
+```
+4. Append the following system property to config.systemProperties and place encrypted LunaPIN to com.l7tech.encryptedLunaPin in luna_headless_value.yaml
+   #LUNA properties
+   com.l7tech.common.security.jceProviderEngineName=luna
+   com.l7tech.luna.installAsLeastPreference=true
+   com.l7tech.encryptedLunaPin='<EncryptedLunaPartitionPassword>'
+   com.l7tech.lunaPartitionLabel=development
+   com.l7tech.server.keyStore.defaultSsl.alias=-1:<alias of the default SSL key, the default is SSL>
+   com.l7tech.common.security.disableJceProviderFallback=false
+
+3. start the Gateway, The Gateway is now using Luna HSM as keystore.
