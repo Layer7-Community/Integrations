@@ -1,12 +1,12 @@
 license:
   accept: false
- #existingSecretName: ssg-license
+# existingSecretName: ssg-license
 
 replicas: 1
 image:
   registry: docker.io
   repository: caapim/gateway
-  tag: 11.1.00
+  tag: 11.1.1
 
 podAnnotations:
   sidecar.opentelemetry.io/inject: "gateway-opentelemetry-collector"
@@ -27,6 +27,16 @@ config:
   # Heap Size should be a percentage of the memory configured in resource limits
   # by default it is 50% - you should not go above 75%
   heapSize: "3g"
+  otel:
+    # If sdkOnly is enabled we will inject the above environment variables
+    # Note that this is container level configuration only. You will still need to set the relevant cluster-wide and system properties below
+    sdkOnly:
+      enabled: true
+    # Used to inject additional resource attributes for tracking with the sdkOnly approach
+    # these can then be used as an additional filter in your observability backend
+    additionalResourceAttributes:
+    - test=someEnvValue
+   # - test1=someEnvValue1
   javaArgs:
     - -Dcom.l7tech.bootstrap.autoTrustSslKey=trustAnchor,TrustedFor.SSL,TrustedFor.SAML_ISSUER
     - -Dcom.l7tech.server.audit.message.saveToInternal=false
@@ -54,7 +64,6 @@ config:
     # Additional properties go here
     otel.sdk.disabled=false
     otel.java.global-autoconfigure.enabled=true
-    otel.service.name=my-gateway-deployment
     otel.exporter.otlp.endpoint=http://localhost:4318/
     otel.exporter.otlp.protocol=http/protobuf
     otel.traces.exporter=otlp
