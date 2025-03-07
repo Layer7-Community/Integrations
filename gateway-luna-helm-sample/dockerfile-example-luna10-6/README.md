@@ -2,7 +2,7 @@
 
 ## Description
 
-This sample Dockerfile builds a derived Gateway image 11.1 that can connect to Luna HSM 7.
+This sample Dockerfile builds a derived **Gateway image 11.1 and above** that can connect to Luna HSM 7.
 
 ## Prerequisites/Dependencies
 The Dockerfile has specific steps to install the Minimal Luna HSM Client 10.6 for Linux.  The following file are required from Thales:

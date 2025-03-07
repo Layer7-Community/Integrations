@@ -1,3 +1,4 @@
+# Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 # requires secret: hsm-server-secret (file that contains password for HSM_USER)
   
 # requires ARG: GW_IMAGE (example caapim/gateway:11.1.1)
@@ -91,6 +92,7 @@ RUN cd $LUNA_DIR/libs/64 \
     && rm -f libCryptoki2_64.so \
     && ln -s libCryptoki2.so libCryptoki2_64.so
 
+RUN chmod -R 655 ${LUNA_DIR}
 #
 # Build new GW image with Luna client
 #
@@ -106,8 +108,8 @@ ENV PATH="${LUNA_DIR}/bin/64:${PATH}"
 
 # For non patched version, copy required jsp files from ${MIN_CLIENT_dir} directly
 #
-COPY --from=luna-min-client $LUNA_DIR/jsp/LunaProvider.jar /opt/SecureSpan/Gateway/runtime/lib/ext/
-COPY --from=luna-min-client $LUNA_DIR/jsp/64/libLunaAPI.so /opt/SecureSpan/Gateway/runtime/lib/ext/
+COPY --from=luna-min-client --chmod=755 $LUNA_DIR/jsp/LunaProvider.jar /opt/SecureSpan/Gateway/runtime/lib/ext/
+COPY --from=luna-min-client --chmod=755 $LUNA_DIR/jsp/64/libLunaAPI.so /opt/SecureSpan/Gateway/runtime/lib/ext/
 #
 # Update security provider order as required by Luna client.  This can be done either here or in the helm chart.
 # For this example, it is done in the helmchart so that the provider order can be reverted if there is a need
