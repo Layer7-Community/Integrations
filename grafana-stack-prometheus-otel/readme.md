@@ -20,7 +20,7 @@ As part of this guide we will deploy the following components
 ![grafana-stack](./images/grafana-stack-diagram.png)
 
 ## Prerequisites
-- Kubernetes v1.26+
+- Kubernetes v1.29+
 - Ingress Controller (important for grafana)
   - the quickstart examples deploy the nginx ingress controller
 
@@ -187,7 +187,7 @@ helm upgrade -i prometheus -f ./prometheus/prometheus-values.yaml prometheus-com
 ## Deploy the Grafana Stack
 The [Grafana LGTM](https://grafana.com/about/grafana-stack/) (Loki, Grafana, Tempo, Mimir) stack provides a great all in one solution for observing traces, metrics and logs from Kubernetes and other infrastructure. If you would like to manage more than Kubernetes, or more than a single cluster you can check out their cloud offering [here](https://grafana.com/products/cloud/).
 
-In this example, Grafana is configured in the prometheus stack and we are not making use of [mimir](https://grafana.com/oss/mimir/)
+In this example, Grafana is configured in the prometheus stack.
 
 - Add the grafana Helm Chart Repo
 ```
@@ -224,7 +224,7 @@ helm upgrade --install --values ./grafana-stack/mimir-distributed-overrides.yaml
 ```
 
 ## Deploy the OpenTelemetry Operator
-the OpenTelemetry Operator is not a requirement, it makes configuring the Gateway for OpenTelemetry significantly simpler and works well with this example guide
+The OpenTelemetry Operator is not a requirement, it makes configuring the Gateway for OpenTelemetry significantly simpler and works well with this example guide
 
 - Deploy Cert-Manager (OTel Operator dependency)
 ```
