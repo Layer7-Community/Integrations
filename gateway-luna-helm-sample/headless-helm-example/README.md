@@ -1,4 +1,8 @@
-## Container GW Headless deployment in Kubernetes without Policy Manager(GW 11.1.2)
+## Description
+
+This sample helm chart requires a derived **Gateway image 11.1.2** that can connect to Luna HSM 7.
+
+## Container GW Headless deployment in Kubernetes without Policy Manager
 1. Set disklessConfig.enabled to false. Create node.properites file with node.cluster.pass value set. Sample node.properties is for Derby configuration
    Reference README for APIM Gateway charts GibHub Pages [Diskless Configuration](https://github.com/CAAPIM/apim-charts/blob/stable/charts/gateway/README.md#diskless-configuration) for MySQL database configuration
 
