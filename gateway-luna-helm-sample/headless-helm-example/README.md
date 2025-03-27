@@ -13,7 +13,9 @@ This sample helm chart requires a derived **Gateway image 11.1.2** that can conn
 ```
    kubectl create secret generic gateway-secret --from-file=node.properties=./node.properties
 ```
-3. Encrypt LunaPIN by OpenSSL(version 3.2 or above), password is value from node.cluster.pass
+3. Encrypt LunaPIN by OpenSSL, password is value from node.cluster.pass
+   
+   NOTE: Ensure to use openssl 3.2.x version for optimal compatibility.
 ```
    echo -n '<LunaPIN>' | openssl enc -e -aes-256-cbc -pbkdf2 -iter 600000 -saltlen 16 -pass pass:<gateway_cluster_passphrase> -a;history -d $(history 1)
 ```
