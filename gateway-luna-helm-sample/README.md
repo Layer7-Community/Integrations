@@ -11,7 +11,9 @@ to build and run a derived Gateway container with embedded Luna HSM client softw
 * For running the Gateway image, refer to the apim-charts/gateway [prerequisites](https://github.com/CAAPIM/apim-charts/tree/gateway-3.0.5/charts/gateway#prerequisites)
 
 ## Build the derived Gateway image
-Follow the instructions in [dockerfile/README.md](dockerfile/README.md) to build the derived Gateway container
+* Follow the instructions in [dockerfile/README.md](dockerfile/README.md) to build the derived Gateway(11.0) container
+with the Luna client software installed.
+* Follow the instructions in [dockerfile-example-luna10-6/README.md](dockerfile/README.md) to build the derived Gateway(11.1 and above) container
 with the Luna client software installed.
 
 ## Deploying the Gateway
@@ -53,3 +55,6 @@ Then scale up as desired.
    ```
    kubectl scale deployments --namespace <NAMESPACE> <DEPLOYMENT-NAME>-gateway --replicas 1
    ```
+
+## Headless deployment in Kubernetes without Policy Manager(GW 11.1.2)
+Follow the instruction in [headelss-helm-example/README.md](dockerfile/README.md) to deploy derived GW(11.1.2).

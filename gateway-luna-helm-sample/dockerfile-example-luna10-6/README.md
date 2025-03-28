@@ -2,7 +2,7 @@
 
 ## Description
 
-This sample Dockerfile builds a derived Gateway image 11.1 that can connect to Luna HSM 7.
+This sample Dockerfile builds a derived Gateway image 11.1.1 that can connect to Luna HSM 7.
 
 ## Prerequisites/Dependencies
 The Dockerfile has specific steps to install the Minimal Luna HSM Client 10.6 for Linux.  The following file are required from Thales:
@@ -37,3 +37,6 @@ To build the image:
 * Policy Manager must be used to enable HSM on the Gateway once the Gateway has been started.
 * For the simplicity of this sample, HSM client registration is done during image creation.  The registration steps can be moved out and be performed at a later time.
 * The HSM partition is specified during image creation.  Create a new image if a new partition is to be selected.
+
+Note:
+From GW11.1.2, Policy Manager is not required for Headless deployment. See headless-helm-example.

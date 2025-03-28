@@ -1,3 +1,4 @@
+# Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 # requires secret: hsm-server-secret (file that contains password for HSM_USER)
   
 # requires ARG: GW_IMAGE (example caapim/gateway:11.0.00)
@@ -95,6 +96,7 @@ RUN mkdir -p ${LUNA_DIR} \
   && rm -f /tmp/${CLIENT_TAR_FILENAME}
 
 RUN cp -r /home/luna-docker/config ${LUNA_DIR}/config
+RUN chmod -R 655 ${LUNA_DIR}
 
 #
 # Build new GW image with Luna client
@@ -111,8 +113,8 @@ ENV PATH="${LUNA_DIR}/bin/64:${PATH}"
 
 # For non patched version, copy required jsp files from ${MIN_CLIENT_dir} directly
 #
-COPY --from=luna-min-client /tmp/patch/LunaProvider.jar /opt/SecureSpan/Gateway/runtime/lib/ext/
-COPY --from=luna-min-client /tmp/patch/linux/64/libLunaAPI.so /opt/SecureSpan/Gateway/runtime/lib/ext/
+COPY --from=luna-min-client --chmod=755 /tmp/patch/LunaProvider.jar /opt/SecureSpan/Gateway/runtime/lib/ext/
+COPY --from=luna-min-client --chmod=755 /tmp/patch/linux/64/libLunaAPI.so /opt/SecureSpan/Gateway/runtime/lib/ext/
 
 #
 # Update security provider order as required by Luna client.  This can be done either here or in the helm chart.

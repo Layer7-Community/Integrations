@@ -5,6 +5,8 @@
 This sample Dockerfile builds a derived Gateway image 11.0 that can connect to Luna HSM 7.  It has been updated to work with the new 11.0.00 CR2 which uses the UBI9-minimal base image from Iron Bank.  This Dockerfile will likely work with 10.1 and 11.0 CR1 (which still use the CentOS7 base image) though it wasn't tested with those versions. For the UBI9-minimal base image, Linux packages that are no longer available 
 in the derived image may be added back using microdnf.
 
+To build a derived **Gateway image 11.1 and above**, use dockerfile-example-luna10-6 as reference.
+
 ## Prerequisites/Dependencies
 The Dockerfile has specific steps to install the Luna Client 10.3 + Luna Client jdk11 patch.  The following files are required from Thales:
 
@@ -31,6 +33,9 @@ To build the image:
 6. Start up the container.  At this time, the Policy Manager must be used to enable the HSM Keystore. Click on Manage Private Keys / Manage Keystore/ Enable SafeNet HSM and enter the required information.
 
 7. Scale down and scale up the Gateway.  The Gateway is now using Luna HSM.
+
+Note:
+From **GW11.1.2**, Policy Manager is not required for Headless deployment. See headless-helm-example.
 
 ## Known Limitations
 
