@@ -4,59 +4,63 @@
 # There may have been OS packages that you rely on in pre-11.1.2 but are no longer available, this is due to the base change from ubi9-minimal to ubi9-micro
 # This dockerfile provides an example on how you can add packages back to your own version of the Layer 7 Gateway image
 
-# Temporary location path to put the existing root directory of the official Layer 7 API Gateway image
-ARG MICRODIR=/tmp/gateway-root
-
-# Entrypoint user ID, this value has to be 1001
+ARG MICRODIR=/tmp/micro-root
+ARG MICROSRC=/tmp/source
+ARG MICROTGT=/tmp/target
 ARG ENTRYPOINT_UID=1001
 
-# Layer 7 API Gateway image to build on
-ARG GATEWAY_IMAGE=caapim/gateway:latest
+FROM caapim/gateway:latest AS base
 
-# UBI9 image from redhat. This image will provide the dnf command utility to run package installation
-ARG UBI9=redhat/ubi9:latest
+# Use ubi9:latest image to run dnf and run rsync to find diff
+FROM redhat/ubi9:latest AS installer
 
-# Establish the official Layer 7 API Gateway image as "base"
-FROM ${GATEWAY_IMAGE} AS base
-
-# Establish the redhat/ubi9:latest image as "utility-provider"
-FROM ${UBI9} AS utility-provider
 USER root
-
-# Make the temporary directory inside the redhat UBI9 image
 ARG MICRODIR
-RUN mkdir ${MICRODIR}
+ARG MICROSRC
+ARG MICROTGT
 
-# Copy the Layer 7 API Gateway image's (base) root directory into the created directory on the utility-provider
-COPY --from=base / ${MICRODIR}
+# Copy Gateway into 2 directories, SRC and TGT for rsync to compare and find the changed files
+COPY --from=base / ${MICROSRC}
+COPY --from=base / ${MICROTGT}
 
-# Set dnf argument
-ENV DNF_ARGS=--releasever=9.5\ --disableplugin=subscription-manager\ --disablerepo=*\ --enablerepo=ubi-9-appstream-rpms\ --enablerepo=ubi-9-baseos-rpms
-
-# Run dnf command ( from redhat ubi9) to install packageNameA and packageNameB.
-# Change the root context to MICRODIR for dnf to use as a reference to figure out what dependencies are needed
-# Replace packageNameA and packageNameB with the package you want to install
+# Install rsync utility on ubi9:latest
 RUN <<EOF bash
-
 dnf ${DNF_ARGS} install \
---nodocs --noplugins \
---installroot ${MICRODIR} \
---setopt=install_weak_deps=False \
--y \
-packageNameA packageNameB
+  --nodocs --noplugins \
+  --setopt=install_weak_deps=False \
+  -y \
+  rsync
+
+# Directory to hold the changed files
+mkdir ${MICRODIR}
+
+# run dnf to install packages "sudo" and "passwd". Set SRC as the installroot
+dnf ${DNF_ARGS} install \
+  --nodocs --noplugins \
+  --installroot ${MICROSRC} \
+  --setopt=install_weak_deps=False \
+  -y \
+  sudo passwd
 dnf clean all \
---installroot ${MICRODIR}
+  --installroot ${MICROSRC}
+
+# Cleanup of unnecessary files
+rm -rf ${MICROSRC}/var/cache/*
+rm -rf ${MICROSRC}/var/log/*
+rm -rf ${MICROSRC}/run/*
+rm -rf ${MICROSRC}/etc/machine-id
+rm -rf ${MICROSRC}/usr/share/gcc*/python
+
+# Run rsync https://linux.die.net/man/1/rsync
+# archive mode (This is equivalent to -rlptgoD), verbose, and use checksum to determine diff
+rsync -avc --compare-dest=${MICROTGT} ${MICROSRC}/ ${MICRODIR}
 EOF
 
 
-# Override the Layer 7 API Gateway image's root with the one in utility-provider
-FROM ${GATEWAY_IMAGE}
+FROM base
+ARG MICRODIR
+ARG ENTRYPOINT_UID
 
 USER root
-
-ARG ENTRYPOINT_UID
-ARG MICRODIR
-
-# Replace Layer 7 API Gateway's root directory with the content of MICRODIR
-COPY --from=utility-provider --chown=root:root ${MICRODIR} .
+COPY --from=installer --chown=root:root ${MICRODIR} .
 USER ${ENTRYPOINT_UID}
