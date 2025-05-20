@@ -4,12 +4,14 @@
 # There may have been OS packages that you rely on in pre-11.1.2 but are no longer available, this is due to the base change from ubi9-minimal to ubi9-micro
 # This dockerfile provides an example on how you can add packages back to your own version of the Layer 7 Gateway image
 
+ARG GW_IMAGE=caapim/gateway:latest
+
 ARG MICRODIR=/tmp/micro-root
 ARG MICROSRC=/tmp/source
 ARG MICROTGT=/tmp/target
 ARG ENTRYPOINT_UID=1001
 
-FROM caapim/gateway:latest AS base
+FROM ${GW_IMAGE} AS base
 
 # Use ubi9:latest image to run dnf and run rsync to find diff
 FROM redhat/ubi9:latest AS installer
