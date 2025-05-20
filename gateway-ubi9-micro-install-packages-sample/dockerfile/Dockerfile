@@ -9,8 +9,11 @@ ARG GW_IMAGE=caapim/gateway:latest
 ARG MICRODIR=/tmp/micro-root
 ARG MICROSRC=/tmp/source
 ARG MICROTGT=/tmp/target
+
+# The UID cannot be modified
 ARG ENTRYPOINT_UID=1001
 
+# Create a Gateway image layer and call it 'base'
 FROM ${GW_IMAGE} AS base
 
 # Use ubi9:latest image to run dnf and run rsync to find diff
@@ -21,11 +24,12 @@ ARG MICRODIR
 ARG MICROSRC
 ARG MICROTGT
 
-# Copy Gateway into 2 directories, SRC and TGT for rsync to compare and find the changed files
+# Copy Gateway into 2 directories, SRC (source) and TGT (target). 'rsync' command uses them
+# to compare and find the changed files
 COPY --from=base / ${MICROSRC}
 COPY --from=base / ${MICROTGT}
 
-# Install rsync utility on ubi9:latest
+# Install 'rsync' utility on ubi9:latest
 RUN <<EOF bash
 dnf ${DNF_ARGS} install \
   --nodocs --noplugins \
@@ -33,16 +37,17 @@ dnf ${DNF_ARGS} install \
   -y \
   rsync
 
-# Directory to hold the changed files
+# A new directory to hold only the changed files/directories
 mkdir ${MICRODIR}
 
-# run dnf to install packages "sudo" and "passwd". Set SRC as the installroot
+# Run dnf to install packages. Set SRC as the installroot
+# Replace <package_A> and <package_B> with the package names. Ex. passwd
 dnf ${DNF_ARGS} install \
   --nodocs --noplugins \
   --installroot ${MICROSRC} \
   --setopt=install_weak_deps=False \
   -y \
-  sudo passwd
+  <package_A> <package_B>
 dnf clean all \
   --installroot ${MICROSRC}
 
@@ -58,7 +63,7 @@ rm -rf ${MICROSRC}/usr/share/gcc*/python
 rsync -avc --compare-dest=${MICROTGT} ${MICROSRC}/ ${MICRODIR}
 EOF
 
-
+# Add new files into the Gateway layer
 FROM base
 ARG MICRODIR
 ARG ENTRYPOINT_UID
