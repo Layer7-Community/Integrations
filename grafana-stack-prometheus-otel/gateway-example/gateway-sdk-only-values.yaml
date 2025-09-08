@@ -6,7 +6,7 @@ replicas: 1
 image:
   registry: docker.io
   repository: caapim/gateway
-  tag: 11.1.1
+  tag: 11.1.2
 
 podAnnotations:
   sidecar.opentelemetry.io/inject: "gateway-opentelemetry-collector"
@@ -27,6 +27,15 @@ config:
   # Heap Size should be a percentage of the memory configured in resource limits
   # by default it is 50% - you should not go above 75%
   heapSize: "3g"
+  # The OTel SDK uses the following environment variables to gather information about the container
+  # NODE_NAME - Kubernetes Node
+  # POD_NAME - Podname, also hostname
+  # NAMESPACE
+  # CONTAINER_NAME - this is always gateway
+  # OTEL_SERVICE_NAME - <release-name>-<chart-name>
+  # OTEL_RESOURCE_ATTRIBUTES
+  # When using auto-instrumentation (injecting the OTel Java Agent via the OpenTelemetryOperator) these values are automatically set
+  # When using the sdk only approach (no OTel Java Agent) we set these using built-in metadata fields
   otel:
     # If sdkOnly is enabled we will inject the above environment variables
     # Note that this is container level configuration only. You will still need to set the relevant cluster-wide and system properties below
@@ -90,6 +99,8 @@ config:
       - name: otel.traceEnabled
         value: "true"
       - name: otel.metricPrefix
+        value: l7_
+      - name: otel.attributePrefix
         value: l7_
       - name: otel.traceConfig
         value: |

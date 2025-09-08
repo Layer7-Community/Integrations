@@ -57,7 +57,7 @@ grafana:
       uid: caa853f8-508d-47f2-a711-ad469652ab58
       orgId: 1
       type: tempo
-      url: http://tempo.grafana-loki.svc.cluster.local:3100
+      url: http://tempo.grafana-loki.svc.cluster.local:3200
       version: 1
       jsonData:
         tracesToLogsV2:
@@ -79,19 +79,6 @@ grafana:
       orgId: 1
       type: prometheus
       url: http://mimir-nginx.grafana-loki.svc.cluster.local/prometheus
-    - name: tempo-minimal
-      id: 6
-      editable: true
-      uid: tempo-minimal
-      orgId: 1
-      type: tempo
-      url: http://tempo.grafana-loki.svc.cluster.local:3100
-      version: 1
-      jsonData:
-        tracesToLogsV2:
-          customQuery: true
-          datasourceUid: P982945308D3682D1
-          filterByTraceID: true
 
   rbac:
     ## If true, Grafana PSPs will be created

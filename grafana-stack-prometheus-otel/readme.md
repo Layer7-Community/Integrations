@@ -175,7 +175,7 @@ helm repo update
 ```
 - Create the Layer7 Dashboards
 
-The dashboards are located in [./prometheus/grafana-dashboard/](./prometheus/grafana-dashboard/) and contain two simple grafana dashboards that get populated with telemetry generated from the Gateway's OpenTelemetry integration. You will find more details about the integration on [Techdocs](https://techdocs.broadcom.com/us/en/ca-enterprise-software/layer7-api-management/api-gateway/11-1/install-configure-upgrade/configuring-opentelemetry-for-the-gateway.html) and the [Gateway Helm Chart](https://github.com/CAAPIM/apim-charts/blob/stable/charts/gateway/README.md#opentelemetry-configuration)
+The dashboard is located in [./prometheus/grafana-dashboard/](./prometheus/grafana-dashboard/). It contains a simple grafana dashboard that gets populated with telemetry generated from the Gateway's OpenTelemetry integration. You will find more details about the integration on [Techdocs](https://techdocs.broadcom.com/us/en/ca-enterprise-software/layer7-api-management/api-gateway/11-1/install-configure-upgrade/configuring-opentelemetry-for-the-gateway.html) and the [Gateway Helm Chart](https://github.com/CAAPIM/apim-charts/blob/stable/charts/gateway/README.md#opentelemetry-configuration)
 ```
 kubectl apply -k ./prometheus/grafana-dashboard/
 ```
