@@ -1,51 +1,41 @@
 # Copyright (c) 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 
-
-ARG BUILDER_IMAGE=docker.io/debian:12
-
-ARG BASEDIR=/tmp/base-root
-
+ARG GW_IMAGE=caapim/gateway:latest
+ARG BUILDER_IMAGE=docker.io/debian:13
 
 # Provide Packages
-###################
+################################################
 FROM ${BUILDER_IMAGE} AS builder
 
 USER root
-COPY packages .
-RUN PACKAGES="$(cat packages)" && \
-    cd /tmp && \
+RUN cd /tmp && \
     apt-get update && \ 
     apt-get install -y apt-rdepends && \
-    # Download curl ,jq and all dependencies in its dependency tree as mentioned at https://packages.debian.org/bookworm/curl 
+    # Download curl and all dependencies in its dependency tree as mentioned at https://packages.debian.org/trixie/curl 
     apt-get download curl \
                     libbrotli1 \
                     libc6 \
                     libgssapi-krb5-2 \
                     libidn2-0 \
-                    libssh2-1 \
-                    libldap-2.5-0 \
+                    libssh2-1t64 \
+                    libldap2 \
                     libnghttp2-14 \
-                    libpsl5 \
+					libnghttp3-9 \
+                    libpsl5t64 \
                     librtmp1 \
-                    libssh-4 \
-                    libssl3 \
+                    libssl3t64 \
                     libzstd1 \
-                    libhogweed6 \
-                    libnettle8 \
-                    libffi8 \
-                    libsasl2-2 \
-                    libp11-kit0 \
-                    libtasn1-6 \
-                    libgnutls30 \
+					libgnutls30t64 \ 
+					libhogweed6t64 libgmp10 libnettle8t64 \
+					libsasl2-2 libp11-kit0 libffi8 libtasn1-6 \
                     zlib1g \
-                    libunistring2 \
-                     libcurl4 && \
-        apt-get download jq \
-                        libjq1 \
-                        libc6 \
-                        libonig5 \
-                        libgcc-s1 \
-                        libjq1 && \
+                    libunistring5 \
+                    libcurl4t64 && \
+    # Download jq and all dependencies in its dependency tree as mentioned at https://packages.debian.org/trixie/curl 
+    apt-get download jq \
+                    libc6 \
+                    libonig5 \
+                    libjq1 && \
     mkdir /dpkg && \
     mkdir -p /dpkg/var/lib/dpkg/status.d && \
     for deb in *.deb; do \
@@ -55,7 +45,7 @@ RUN PACKAGES="$(cat packages)" && \
         dpkg --extract $deb /dpkg || exit 10; \
     done
 
-FROM caapim/gateway:latest
+FROM ${GW_IMAGE}
 
 USER root
 COPY --from=builder /dpkg /
